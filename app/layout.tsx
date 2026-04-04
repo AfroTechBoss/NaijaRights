@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
+import SplashScreen from "@/components/SplashScreen";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const manrope = Manrope({
@@ -23,7 +24,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geist.variable} ${manrope.variable}`}>
       <body className="min-h-[100dvh] flex flex-col">
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <SplashScreen />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );
