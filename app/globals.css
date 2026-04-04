@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-headline: var(--font-manrope);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Brand */
+  --primary:              #006e41;
+  --primary-dim:          #006038;
+  --primary-container:    #8df8b7;
+  --on-primary:           #e7ffeb;
+  --on-primary-container: #005e37;
+
+  /* Secondary */
+  --secondary:            #315cae;
+  --secondary-container:  #d9e2ff;
+  --on-secondary-container: #1f4ea0;
+
+  /* Tertiary */
+  --tertiary:             #7432e0;
+  --tertiary-container:   #c7aaff;
+  --on-tertiary-container:#47009d;
+  --tertiary-fixed:       #c7aaff;
+  --on-tertiary-fixed:    #2b0066;
+
+  /* Error */
+  --error:                #ac3434;
+  --error-container:      #ffd9d9;
+  --on-error-container:   #65000b;
+
+  /* Surfaces */
+  --background:                 #f8f9ff;
+  --surface:                    #f8f9ff;
+  --surface-lowest:             #ffffff;
+  --surface-container-low:      #eff4ff;
+  --surface-container:          #e6eeff;
+  --surface-container-high:     #dce9ff;
+  --surface-container-highest:  #d3e4ff;
+  --surface-dim:                #c4dcff;
+
+  /* Text */
+  --on-surface:         #143455;
+  --on-surface-variant: #456185;
+  --outline:            #607ca2;
+  --outline-variant:    #97b4dc;
+
+  /* Layout */
+  --topbar-height:      64px;
+  --bottomnav-height:   80px;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--on-surface);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  overscroll-behavior: none;
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-manrope), var(--font-geist-sans), ui-sans-serif, sans-serif;
+  letter-spacing: -0.02em;
 }
