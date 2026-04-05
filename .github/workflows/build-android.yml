@@ -1,14 +1,18 @@
 name: Build & Release Android APK
 
-# Triggers:
-#   1. Push a version tag (e.g. git tag v1.0.0 && git push origin v1.0.0)
-#      → builds APK and creates a public GitHub Release with the APK attached
-#   2. Manual run from GitHub Actions tab (for testing)
 on:
   push:
     tags:
       - "v*"
   workflow_dispatch:
+
+# Required to create GitHub Releases and upload assets
+permissions:
+  contents: write
+
+# Opt all actions into Node.js 24 now (avoids deprecation warnings)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-apk:
@@ -34,7 +38,6 @@ jobs:
       - name: Build static export (generates out/)
         run: npm run build
         env:
-          # If you've added a PostHog key as a GitHub Secret, it gets baked in here
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
           NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
 
@@ -52,7 +55,7 @@ jobs:
       - name: Install Android platform & build-tools
         run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      # ── 6. Capacitor sync ─────────────────────────────────────────────────────
+      # ── 6. Capacitor sync ────────────────────────────────────────────────────
       - name: Sync Capacitor (copies out/ → android assets)
         run: npx cap sync android
 
@@ -65,7 +68,7 @@ jobs:
           cd android
           ./gradlew assembleDebug --no-daemon
 
-      # ── 8. Rename APK to a friendly name ─────────────────────────────────────
+      # ── 8. Rename APK ────────────────────────────────────────────────────────
       - name: Rename APK
         run: |
           VERSION="${{ github.ref_name }}"
@@ -77,7 +80,7 @@ jobs:
           echo "APK_PATH=NaijaRights-${VERSION}.apk" >> $GITHUB_ENV
           echo "APK_VERSION=${VERSION}" >> $GITHUB_ENV
 
-      # ── 9. Upload APK as workflow artifact (always, even without a tag) ──────
+      # ── 9. Upload as workflow artifact (always available, even without a tag) ─
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
@@ -100,8 +103,7 @@ jobs:
             3. Open the downloaded `.apk` file and tap **Install**
             4. Open NaijaRights and know your rights!
 
-            > This is a direct-install (sideload) APK — no Play Store needed.
-            > Tested on Android 10+.
+            > Direct-install APK — no Play Store needed. Tested on Android 10+.
 
             ---
             📊 Download count is tracked automatically by GitHub.
