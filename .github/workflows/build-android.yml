@@ -17,6 +17,10 @@ jobs:
     name: Build Android APK + AAB
     runs-on: ubuntu-latest
 
+    env:
+      # Evaluate secret presence at job level — secrets context is not allowed in step if: conditions
+      HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
+
     steps:
       # ── 1. Source ────────────────────────────────────────────────────────────
       - name: Checkout repository
@@ -57,9 +61,9 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # ── 7. Signing keystore (only when secret is set) ────────────────────────
+      # ── 7. Keystore (only when KEYSTORE_BASE64 secret is set) ────────────────
       - name: Decode keystore
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: env.HAS_KEYSTORE == 'true'
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode \
             > "${{ github.workspace }}/naijarights-release.keystore"
@@ -70,7 +74,7 @@ jobs:
           echo "BUILD_TYPE=release"                                                 >> $GITHUB_ENV
 
       - name: Set build type to debug (no keystore)
-        if: ${{ secrets.KEYSTORE_BASE64 == '' }}
+        if: env.HAS_KEYSTORE != 'true'
         run: echo "BUILD_TYPE=debug" >> $GITHUB_ENV
 
       # ── 8. Build ─────────────────────────────────────────────────────────────
@@ -138,8 +142,6 @@ jobs:
 
             ### 🏪 Google Play Store (AAB)
             Download **${{ env.AAB_PATH }}** and upload it in the Google Play Console.
-
-            > Signed: ${{ env.BUILD_TYPE == 'release' && '✅ Release keystore' || '⚠️ Debug keystore (add KEYSTORE_BASE64 secret for release signing)' }}
 
             ---
             📊 Download count tracked automatically by GitHub.
