@@ -142,7 +142,7 @@ export default function SourcesPage() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e0e0e0", margin: "40px 0 24px" }} />
       <p style={{ fontSize: "13px", color: "#999" }}>
-        NaijaRights provides general legal education only, not legal advice. Laws may change — always consult a qualified Nigerian lawyer for specific legal issues. This app is not a government service.
+        NaijaRights provides general legal education only, not legal advice. We are not affiliated with any Nigerian government agency. Laws may change — always consult a qualified Nigerian lawyer for specific legal issues.
       </p>
     </main>
   );

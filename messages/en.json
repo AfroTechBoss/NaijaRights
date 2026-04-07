@@ -13,7 +13,7 @@
   "home.search.results": "Results for",
   "home.search.clear": "Clear",
   "home.search.empty": "No topics found for",
-  "home.disclaimer": "This app provides general legal education, not legal advice. For specific legal issues, consult a qualified Nigerian lawyer.",
+  "home.disclaimer": "This app provides general legal education, not legal advice. For specific legal issues, consult a qualified Nigerian lawyer. NaijaRights is not affiliated with any government agency.",
   "home.disclaimer.title": "Legal Disclaimer",
 
   "section.topics": "Topics",
@@ -45,7 +45,7 @@
   "emergency.general": "General Emergency",
 
   "lang.change": "Language",
-  "footer.disclaimer": "NaijaRights provides general legal education only, not legal advice. Laws may change — always verify with a qualified lawyer.",
+  "footer.disclaimer": "NaijaRights provides general legal education only, not legal advice. We are not affiliated with any Nigerian government agency. Laws may change — always verify with a qualified lawyer.",
   "footer.rights": "Free to share and use.",
   "footer.emergency": "Emergency Contacts",
   "footer.nhrc": "National Human Rights Commission",

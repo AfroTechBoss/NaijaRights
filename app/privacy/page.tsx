@@ -61,7 +61,7 @@ export default function PrivacyPolicy() {
       <p>If you have any questions about this Privacy Policy, please open an issue on our GitHub repository: <a href="https://github.com/AfroTechBoss/NaijaRights" style={link}>github.com/AfroTechBoss/NaijaRights</a>.</p>
 
       <hr style={{ border: "none", borderTop: "1px solid #e0e0e0", margin: "48px 0 24px" }} />
-      <p style={{ fontSize: "13px", color: "#999" }}>NaijaRights provides general legal education only, not legal advice. Always consult a qualified Nigerian lawyer for specific legal issues.</p>
+      <p style={{ fontSize: "13px", color: "#999" }}>NaijaRights provides general legal education only, not legal advice. We are not affiliated with any Nigerian government agency. Always consult a qualified Nigerian lawyer for specific legal issues.</p>
     </main>
   );
 }
