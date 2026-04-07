@@ -17,16 +17,10 @@ jobs:
     name: Build Android APK + AAB
     runs-on: ubuntu-latest
 
-    env:
-      # Evaluate secret presence at job level — secrets context is not allowed in step if: conditions
-      HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
-
     steps:
-      # ── 1. Source ────────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Node ──────────────────────────────────────────────────────────────
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -36,82 +30,95 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      # ── 3. Next.js static export ─────────────────────────────────────────────
       - name: Build static export
         run: npm run build
         env:
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
           NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
 
-      # ── 4. Java ──────────────────────────────────────────────────────────────
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: "temurin"
 
-      # ── 5. Android SDK ───────────────────────────────────────────────────────
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install Android platform & build-tools
         run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      # ── 6. Capacitor sync ────────────────────────────────────────────────────
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # ── 7. Keystore (only when KEYSTORE_BASE64 secret is set) ────────────────
-      - name: Decode keystore
-        if: env.HAS_KEYSTORE == 'true'
+      # ── Signing ──────────────────────────────────────────────────────────────
+      # Always produces a signed release build.
+      # - If KEYSTORE_BASE64 secret exists → decodes and uses it (consistent sig)
+      # - If not → generates a new keystore, signs with it, and prints the
+      #   base64 in the Job Summary so you can save it as a secret for next time.
+      - name: Set up signing keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode \
-            > "${{ github.workspace }}/naijarights-release.keystore"
-          echo "KEYSTORE_PATH=${{ github.workspace }}/naijarights-release.keystore" >> $GITHUB_ENV
-          echo "KEYSTORE_STORE_PASSWORD=${{ secrets.KEYSTORE_STORE_PASSWORD }}"    >> $GITHUB_ENV
-          echo "KEYSTORE_KEY_ALIAS=${{ secrets.KEYSTORE_KEY_ALIAS }}"              >> $GITHUB_ENV
-          echo "KEYSTORE_KEY_PASSWORD=${{ secrets.KEYSTORE_KEY_PASSWORD }}"        >> $GITHUB_ENV
-          echo "BUILD_TYPE=release"                                                 >> $GITHUB_ENV
+          KS="$HOME/naijarights.keystore"
 
-      - name: Set build type to debug (no keystore)
-        if: env.HAS_KEYSTORE != 'true'
-        run: echo "BUILD_TYPE=debug" >> $GITHUB_ENV
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "✅ Using stored keystore from secret"
+            echo "$KEYSTORE_B64" | base64 --decode > "$KS"
+          else
+            echo "⚠️  No KEYSTORE_BASE64 secret found — generating a new keystore"
+            keytool -genkey -v \
+              -keystore "$KS" \
+              -alias naijarights \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$KS_PASS" \
+              -keypass   "$KS_PASS" \
+              -dname "CN=NaijaRights,O=NaijaRights,C=NG" \
+              -noprompt
 
-      # ── 8. Build ─────────────────────────────────────────────────────────────
+            B64=$(base64 -w 0 "$KS")
+            echo "## ⚠️ Save this keystore as a GitHub Secret"           >> $GITHUB_STEP_SUMMARY
+            echo ""                                                        >> $GITHUB_STEP_SUMMARY
+            echo "Go to **Settings → Secrets → Actions** and add:"        >> $GITHUB_STEP_SUMMARY
+            echo ""                                                        >> $GITHUB_STEP_SUMMARY
+            echo "| Secret | Value |"                                     >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|"                                      >> $GITHUB_STEP_SUMMARY
+            echo "| \`KEYSTORE_BASE64\` | (see code block below) |"       >> $GITHUB_STEP_SUMMARY
+            echo "| \`KEYSTORE_STORE_PASSWORD\` | \`$KS_PASS\` |"         >> $GITHUB_STEP_SUMMARY
+            echo "| \`KEYSTORE_KEY_ALIAS\` | \`naijarights\` |"           >> $GITHUB_STEP_SUMMARY
+            echo "| \`KEYSTORE_KEY_PASSWORD\` | \`$KS_PASS\` |"           >> $GITHUB_STEP_SUMMARY
+            echo ""                                                        >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`"                                                  >> $GITHUB_STEP_SUMMARY
+            echo "$B64"                                                    >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`"                                                  >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "KEYSTORE_PATH=$KS"          >> $GITHUB_ENV
+          echo "KEYSTORE_STORE_PASSWORD=$KS_PASS" >> $GITHUB_ENV
+          echo "KEYSTORE_KEY_ALIAS=naijarights"   >> $GITHUB_ENV
+          echo "KEYSTORE_KEY_PASSWORD=$KS_PASS"   >> $GITHUB_ENV
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.KEYSTORE_STORE_PASSWORD || 'NaijaRights2025!' }}
+
       - name: Make Gradle wrapper executable
         run: chmod +x android/gradlew
 
-      - name: Build APK + AAB
+      - name: Build signed release APK + AAB
         run: |
           cd android
-          if [ "$BUILD_TYPE" = "release" ]; then
-            ./gradlew assembleRelease bundleRelease --no-daemon
-          else
-            ./gradlew assembleDebug bundleDebug --no-daemon
-          fi
+          ./gradlew assembleRelease bundleRelease --no-daemon
 
-      # ── 9. Collect outputs ───────────────────────────────────────────────────
-      - name: Locate and rename outputs
+      - name: Rename outputs
         run: |
           VERSION="${{ github.ref_name }}"
           [ -z "$VERSION" ] && VERSION="dev-$(date +%Y%m%d)"
 
-          if [ "$BUILD_TYPE" = "release" ]; then
-            APK_SRC="android/app/build/outputs/apk/release/app-release.apk"
-            AAB_SRC="android/app/build/outputs/bundle/release/app-release.aab"
-          else
-            APK_SRC="android/app/build/outputs/apk/debug/app-debug.apk"
-            AAB_SRC="android/app/build/outputs/bundle/debug/app-debug.aab"
-          fi
-
-          cp "$APK_SRC" "NaijaRights-${VERSION}.apk"
-          cp "$AAB_SRC" "NaijaRights-${VERSION}.aab"
+          cp android/app/build/outputs/apk/release/app-release.apk "NaijaRights-${VERSION}.apk"
+          cp android/app/build/outputs/bundle/release/app-release.aab "NaijaRights-${VERSION}.aab"
 
           echo "APK_PATH=NaijaRights-${VERSION}.apk" >> $GITHUB_ENV
           echo "AAB_PATH=NaijaRights-${VERSION}.aab" >> $GITHUB_ENV
           echo "APK_VERSION=${VERSION}"              >> $GITHUB_ENV
 
-      # ── 10. Artifacts ────────────────────────────────────────────────────────
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
@@ -126,7 +133,6 @@ jobs:
           path: ${{ env.AAB_PATH }}
           retention-days: 30
 
-      # ── 11. GitHub Release ───────────────────────────────────────────────────
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
@@ -135,13 +141,13 @@ jobs:
           body: |
             ## NaijaRights ${{ env.APK_VERSION }}
 
-            ### 📲 Install directly on Android (APK)
+            ### 📲 Install on Android (APK)
             1. Download **${{ env.APK_PATH }}** below
-            2. Go to **Settings → Security** → enable **"Install unknown apps"**
+            2. On your phone: **Settings → Security → Install unknown apps**
             3. Open the `.apk` and tap **Install**
 
             ### 🏪 Google Play Store (AAB)
-            Download **${{ env.AAB_PATH }}** and upload it in the Google Play Console.
+            Download **${{ env.AAB_PATH }}** and upload it in Google Play Console.
 
             ---
             📊 Download count tracked automatically by GitHub.
