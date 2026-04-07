@@ -63,13 +63,13 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x android/gradlew
 
-      - name: Build debug APK
+      - name: Build debug APK + AAB
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug bundleDebug --no-daemon
 
-      # ── 8. Rename APK ────────────────────────────────────────────────────────
-      - name: Rename APK
+      # ── 8. Rename outputs ─────────────────────────────────────────────────────
+      - name: Rename outputs
         run: |
           VERSION="${{ github.ref_name }}"
           if [ -z "$VERSION" ] || [ "$VERSION" = "refs/heads/master" ]; then
@@ -77,15 +77,25 @@ jobs:
           fi
           cp android/app/build/outputs/apk/debug/app-debug.apk \
              "NaijaRights-${VERSION}.apk"
+          cp android/app/build/outputs/bundle/debug/app-debug.aab \
+             "NaijaRights-${VERSION}.aab"
           echo "APK_PATH=NaijaRights-${VERSION}.apk" >> $GITHUB_ENV
+          echo "AAB_PATH=NaijaRights-${VERSION}.aab" >> $GITHUB_ENV
           echo "APK_VERSION=${VERSION}" >> $GITHUB_ENV
 
-      # ── 9. Upload as workflow artifact (always available, even without a tag) ─
+      # ── 9. Upload as workflow artifacts ──────────────────────────────────────
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: NaijaRights-APK
           path: ${{ env.APK_PATH }}
+          retention-days: 30
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NaijaRights-AAB
+          path: ${{ env.AAB_PATH }}
           retention-days: 30
 
       # ── 10. Create GitHub Release (only on version tags) ─────────────────────
@@ -97,15 +107,20 @@ jobs:
           body: |
             ## NaijaRights ${{ env.APK_VERSION }}
 
-            ### 📲 How to install on Android
+            ### 📲 Install directly on Android (APK)
             1. Download **${{ env.APK_PATH }}** below
-            2. On your Android phone open **Settings → Security** (or Privacy) and enable **"Install unknown apps"** / **"Unknown sources"**
-            3. Open the downloaded `.apk` file and tap **Install**
-            4. Open NaijaRights and know your rights!
+            2. On your phone go to **Settings → Security** and enable **"Install unknown apps"**
+            3. Open the downloaded `.apk` and tap **Install**
 
-            > Direct-install APK — no Play Store needed. Tested on Android 10+.
+            ### 🏪 Google Play Store (AAB)
+            Download **${{ env.AAB_PATH }}** and upload it in the Google Play Console.
+
+            > APK = direct sideload install · AAB = Play Store upload
+            > Tested on Android 10+.
 
             ---
-            📊 Download count is tracked automatically by GitHub.
-          files: ${{ env.APK_PATH }}
+            📊 Download count tracked automatically by GitHub.
+          files: |
+            ${{ env.APK_PATH }}
+            ${{ env.AAB_PATH }}
           token: ${{ secrets.GITHUB_TOKEN }}
