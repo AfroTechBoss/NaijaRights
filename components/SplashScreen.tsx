@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Scale } from "lucide-react";
+import Image from "next/image";
 
 export default function SplashScreen() {
   const [phase, setPhase] = useState<"in" | "hold" | "out" | "done">("in");
@@ -51,31 +51,15 @@ export default function SplashScreen() {
 
       {/* Logo mark */}
       <div style={{
-        width: "80px", height: "80px", borderRadius: "24px",
-        background: "rgba(255,255,255,0.12)",
-        border: "1px solid rgba(255,255,255,0.18)",
-        display: "flex", alignItems: "center", justifyContent: "center",
+        width: "120px", height: "120px", borderRadius: "28px",
+        overflow: "hidden",
         marginBottom: "20px",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
         transform: visible ? "scale(1) translateY(0)" : "scale(0.7) translateY(16px)",
         opacity: visible ? 1 : 0,
         transition: "transform 0.55s cubic-bezier(0.34,1.56,0.64,1), opacity 0.45s ease",
       }}>
-        <Scale style={{ width: "36px", height: "36px", color: "#e7ffeb" }} />
-      </div>
-
-      {/* Brand name */}
-      <div style={{
-        fontFamily: "var(--font-manrope), system-ui, sans-serif",
-        fontWeight: 800,
-        fontSize: "26px",
-        letterSpacing: "0.12em",
-        color: "#e7ffeb",
-        transform: visible ? "translateY(0)" : "translateY(12px)",
-        opacity: visible ? 1 : 0,
-        transition: "transform 0.55s 0.1s cubic-bezier(0.34,1.3,0.64,1), opacity 0.45s 0.1s ease",
-      }}>
-        NAIJARIGHTS
+        <Image src="/logo.png" alt="NaijaRights" width={120} height={120} priority unoptimized />
       </div>
 
       {/* Tagline */}

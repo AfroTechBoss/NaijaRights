@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Scale } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 interface Props {
@@ -32,11 +33,8 @@ export default function TopBar({ title, backHref, showLogo = false }: Props) {
           </Link>
         ) : showLogo ? (
           <Link href="/" className="flex items-center gap-2.5">
-            <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm"
-              style={{ background: "linear-gradient(135deg, #006e41, #008751)" }}
-            >
-              <Scale className="w-4 h-4 text-white" />
+            <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm shrink-0">
+              <Image src="/logo.png" alt="NaijaRights" width={36} height={36} priority unoptimized />
             </div>
             <span
               className="text-xl font-black uppercase tracking-wider"
