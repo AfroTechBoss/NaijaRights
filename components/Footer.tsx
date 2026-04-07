@@ -28,6 +28,15 @@ export default function Footer() {
               {t("footer.disclaimer")}
             </p>
             <p className="text-xs text-[#a8a29e] mt-2">{t("footer.rights")}</p>
+            <div className="flex gap-3 mt-3">
+              <a href="https://naijarights.vercel.app/privacy" target="_blank" rel="noopener noreferrer" className="text-xs text-[#a8a29e] hover:text-[#166534] transition-colors">
+                Privacy Policy
+              </a>
+              <span className="text-xs text-[#d6d3d1]">·</span>
+              <a href="https://naijarights.vercel.app/sources" target="_blank" rel="noopener noreferrer" className="text-xs text-[#a8a29e] hover:text-[#166534] transition-colors">
+                Legal Sources
+              </a>
+            </div>
           </div>
 
           {/* Emergency contacts */}

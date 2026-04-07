@@ -75,6 +75,15 @@ export default function TopicPageClient({ params }: { params: Promise<{ section:
               <p className="text-xs leading-relaxed" style={{ color: "#456185" }}>
                 {t("home.disclaimer")}
               </p>
+              <div className="flex gap-3 mt-2">
+                <a href="https://naijarights.vercel.app/privacy" target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: "#315cae" }}>
+                  Privacy Policy
+                </a>
+                <span className="text-xs" style={{ color: "#a8a29e" }}>·</span>
+                <a href="https://naijarights.vercel.app/sources" target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: "#315cae" }}>
+                  Legal Sources
+                </a>
+              </div>
             </div>
           </div>
         </div>
