@@ -112,13 +112,7 @@ export default function DownloadModal() {
               opacity: 0.7,
             }}
           >
-            {/* Google Play logo SVG */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M3.18 23.5c.3.17.64.2.96.1L15.5 12 12 8.5 3.18 23.5Z" fill="#EA4335"/>
-              <path d="M20.5 10.5 17 8.6l-3.5 3.4 3.5 3.4 3.52-1.9c1-.56 1-.94 0-1.5Z" fill="#FBBC04"/>
-              <path d="M3.18.5C2.7.68 2.38 1.14 2.38 1.8V22.2c0 .66.33 1.12.8 1.3L15.5 12 3.18.5Z" fill="#4285F4"/>
-              <path d="M15.5 12 4.14.5C3.82.35 3.48.38 3.18.5L15.5 12Z" fill="#34A853"/>
-            </svg>
+            <Image src="/google-play-png-logo-3800.png" alt="Google Play" width={24} height={24} unoptimized />
             <div style={{ textAlign: "left" }}>
               <div style={{ fontSize: "10px", color: "#78716c", lineHeight: 1 }}>Coming soon on</div>
               <div style={{ fontSize: "15px", fontWeight: 700, color: "#1c1917", lineHeight: 1.3 }}>Google Play</div>
