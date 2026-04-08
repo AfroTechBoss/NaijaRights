@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "403289087014",
+    "project_id": "naijarights-001",
+    "storage_bucket": "naijarights-001.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403289087014:android:ac028c0906c305c9881ae7",
+        "android_client_info": {
+          "package_name": "com.naijarights.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQKlPotf1QfOtFa46iD5H9pkHOk-wWDu4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

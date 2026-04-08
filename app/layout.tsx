@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import SplashScreen from "@/components/SplashScreen";
 import PostHogProvider from "@/components/PostHogProvider";
 import DownloadModal from "@/components/DownloadModal";
+import PushNotificationProvider from "@/components/PushNotificationProvider";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const manrope = Manrope({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LanguageProvider>
             <SplashScreen />
             <DownloadModal />
+            <PushNotificationProvider />
             {children}
           </LanguageProvider>
         </PostHogProvider>
