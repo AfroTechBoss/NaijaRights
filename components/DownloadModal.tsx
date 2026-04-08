@@ -5,7 +5,7 @@ import Image from "next/image";
 import { X, Smartphone, Download } from "lucide-react";
 
 const APK_URL =
-  "https://github.com/AfroTechBoss/NaijaRights/releases/latest/download/NaijaRights.apk";
+  "https://github.com/AfroTechBoss/NaijaRights/releases/latest/download/NaijaRights-latest.apk";
 
 export default function DownloadModal() {
   const [visible, setVisible] = useState(false);

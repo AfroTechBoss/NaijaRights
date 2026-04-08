@@ -121,6 +121,7 @@ jobs:
           [ -z "$VERSION" ] && VERSION="dev-$(date +%Y%m%d)"
 
           cp android/app/build/outputs/apk/release/app-release.apk "NaijaRights-${VERSION}.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk "NaijaRights-latest.apk"
           cp android/app/build/outputs/bundle/release/app-release.aab "NaijaRights-${VERSION}.aab"
 
           echo "APK_PATH=NaijaRights-${VERSION}.apk" >> $GITHUB_ENV
@@ -161,5 +162,6 @@ jobs:
             📊 Download count tracked automatically by GitHub.
           files: |
             ${{ env.APK_PATH }}
+            NaijaRights-latest.apk
             ${{ env.AAB_PATH }}
           token: ${{ secrets.GITHUB_TOKEN }}
