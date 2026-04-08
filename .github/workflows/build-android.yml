@@ -128,6 +128,12 @@ jobs:
           cp android/app/build/outputs/apk/release/app-release.apk "NaijaRights-latest.apk"
           cp android/app/build/outputs/bundle/release/app-release.aab "NaijaRights-${VERSION}.aab"
 
+          SYMBOLS_SRC="android/app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip"
+          if [ -f "$SYMBOLS_SRC" ]; then
+            cp "$SYMBOLS_SRC" "NaijaRights-${VERSION}-symbols.zip"
+            echo "SYMBOLS_PATH=NaijaRights-${VERSION}-symbols.zip" >> $GITHUB_ENV
+          fi
+
           echo "APK_PATH=NaijaRights-${VERSION}.apk" >> $GITHUB_ENV
           echo "AAB_PATH=NaijaRights-${VERSION}.aab" >> $GITHUB_ENV
           echo "APK_VERSION=${VERSION}"              >> $GITHUB_ENV
@@ -144,6 +150,14 @@ jobs:
         with:
           name: NaijaRights-AAB
           path: ${{ env.AAB_PATH }}
+          retention-days: 30
+
+      - name: Upload debug symbols artifact
+        if: env.SYMBOLS_PATH != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: NaijaRights-Symbols
+          path: ${{ env.SYMBOLS_PATH }}
           retention-days: 30
 
       - name: Create GitHub Release
@@ -168,4 +182,5 @@ jobs:
             ${{ env.APK_PATH }}
             NaijaRights-latest.apk
             ${{ env.AAB_PATH }}
+            ${{ env.SYMBOLS_PATH }}
           token: ${{ secrets.GITHUB_TOKEN }}
