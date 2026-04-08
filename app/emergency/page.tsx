@@ -9,22 +9,22 @@ const CONTACTS = [
   {
     categoryKey: "emergency.legal_aid",
     items: [
-      { name: "Legal Aid Council of Nigeria",    number: "09-2910483",           href: "tel:+2349-2910483",           type: "phone" },
-      { name: "Nigerian Bar Association",         number: "nba.org.ng",           href: "https://nba.org.ng",          type: "web"   },
+      { name: "Legal Aid Council of Nigeria",    number: "07031915990",           href: "tel:+2347031915990",           type: "phone" },
+      { name: "Nigerian Bar Association",         number: "nba.org.ng",           href: "https://www.nigerianbar.org.ng/",          type: "web"   },
     ],
   },
   {
     categoryKey: "emergency.human_rights",
     items: [
-      { name: "National Human Rights Commission", number: "09-6708914",           href: "tel:+2349-6708914",           type: "phone" },
-      { name: "Amnesty International Nigeria",    number: "amnestynigeria.org",   href: "https://amnestynigeria.org",  type: "web"   },
+      { name: "National Human Rights Commission", number: "08006472428",           href: "tel:+2348006472428",           type: "phone" },
+      { name: "Amnesty International Nigeria",    number: "amnestynigeria.org",   href: "https://www.amnesty.org.ng/",  type: "web"   },
     ],
   },
   {
     categoryKey: "emergency.police_complaints",
     items: [
       { name: "Police Service Commission",        number: "psc.gov.ng",           href: "https://psc.gov.ng",          type: "web"   },
-      { name: "ICPC — Corruption / Extortion",    number: "0800-101-0101",        href: "tel:08001010101",             type: "phone" },
+      { name: "ICPC — Corruption / Extortion",    number: "+234 707-535-5585,",        href: "tel:+2347075355585",             type: "phone" },
     ],
   },
   {
@@ -37,15 +37,15 @@ const CONTACTS = [
   {
     categoryKey: "emergency.gender_violence",
     items: [
-      { name: "NAPTIP Helpline",                  number: "0800-628-7480",        href: "tel:08006287480",             type: "phone" },
-      { name: "Project Alert (DV Support)",       number: "01-8931212",           href: "tel:+23418931212",            type: "phone" },
+      { name: "NAPTIP Helpline",                  number: "08002255627874",        href: "tel:+2348002255627874",             type: "phone" },
+      { name: "Project Alert (DV Support)",       number: "+234 818 009 1072",           href: "tel:+2348180091072",            type: "phone" },
     ],
   },
   {
     categoryKey: "emergency.general",
     items: [
       { name: "Nigeria Police Force",             number: "112 / 199",            href: "tel:112",                     type: "phone" },
-      { name: "Fire & Rescue Service",            number: "01-7944929",           href: "tel:+23417944929",            type: "phone" },
+      { name: "Fire & Rescue Service",            number: "112",           href: "tel:112",            type: "phone" },
     ],
   },
 ];
