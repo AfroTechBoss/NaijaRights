@@ -102,6 +102,9 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x android/gradlew
 
+      - name: Clear Gradle cache
+        run: rm -rf ~/.gradle/caches/jars-*
+
       - name: Build signed release APK + AAB
         run: |
           # Derive versionCode from run number (auto-increments) and
@@ -112,6 +115,7 @@ jobs:
 
           cd android
           ./gradlew assembleRelease bundleRelease --no-daemon \
+            --refresh-dependencies \
             -PversionCode=${{ github.run_number }} \
             -PversionName="$VERSION_NAME"
 
