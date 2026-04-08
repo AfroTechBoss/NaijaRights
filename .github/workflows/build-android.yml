@@ -128,10 +128,32 @@ jobs:
           cp android/app/build/outputs/apk/release/app-release.apk "NaijaRights-latest.apk"
           cp android/app/build/outputs/bundle/release/app-release.aab "NaijaRights-${VERSION}.aab"
 
+          # Try AGP-generated symbols first (works when app has its own NDK code)
           SYMBOLS_SRC="android/app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip"
-          if [ -f "$SYMBOLS_SRC" ]; then
-            cp "$SYMBOLS_SRC" "NaijaRights-${VERSION}-symbols.zip"
-            echo "SYMBOLS_PATH=NaijaRights-${VERSION}-symbols.zip" >> $GITHUB_ENV
+          SYMBOLS_OUT="NaijaRights-${VERSION}-symbols.zip"
+
+          if [ -f "$SYMBOLS_SRC" ] && [ "$(unzip -l "$SYMBOLS_SRC" 2>/dev/null | wc -l)" -gt 5 ]; then
+            cp "$SYMBOLS_SRC" "$SYMBOLS_OUT"
+          else
+            # Fall back: package all merged native .so files (Firebase, Capacitor, etc.)
+            # Google Play accepts these for crash symbolication
+            MERGED="android/app/build/intermediates/merged_native_libs/release"
+            if [ ! -d "$MERGED" ]; then
+              MERGED="android/app/build/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib"
+            fi
+            if [ -d "$MERGED" ]; then
+              mkdir -p native_symbols
+              find "$MERGED" -name "*.so" | while read SO; do
+                ABI=$(echo "$SO" | grep -oE 'arm64-v8a|armeabi-v7a|x86_64|x86' | tail -1)
+                [ -n "$ABI" ] && mkdir -p "native_symbols/$ABI" && cp "$SO" "native_symbols/$ABI/"
+              done
+              cd native_symbols && zip -r "../$SYMBOLS_OUT" . && cd ..
+              rm -rf native_symbols
+            fi
+          fi
+
+          if [ -f "$SYMBOLS_OUT" ]; then
+            echo "SYMBOLS_PATH=$SYMBOLS_OUT" >> $GITHUB_ENV
           fi
 
           echo "APK_PATH=NaijaRights-${VERSION}.apk" >> $GITHUB_ENV
@@ -174,7 +196,8 @@ jobs:
             3. Open the `.apk` and tap **Install**
 
             ### 🏪 Google Play Store (AAB)
-            Download **${{ env.AAB_PATH }}** and upload it in Google Play Console.
+            1. Download **${{ env.AAB_PATH }}** and upload it in Google Play Console
+            2. On the same release page, expand **"Native debug symbols"** and upload **${{ env.SYMBOLS_PATH }}** — this removes the Play Store warning about missing symbols
 
             ---
             📊 Download count tracked automatically by GitHub.
