@@ -10,9 +10,19 @@ import EmergencyFAB from "@/components/EmergencyFAB";
 import LanguageSheet from "@/components/LanguageSheet";
 import Onboarding, { useOnboarding } from "@/components/Onboarding";
 
+function isNativeApp() {
+  return typeof window !== "undefined" &&
+    ((window as any).Capacitor?.isNativePlatform?.() ||
+      (window as any).Capacitor?.isNative === true);
+}
+
 export default function HomePage() {
   const { t, language, greeting } = useLanguage();
-  const { show: showOnboarding, complete: completeOnboarding } = useOnboarding();
+  const { show: showOnboardingRaw, complete: completeOnboarding } = useOnboarding();
+  // Only show onboarding on the native app, not on the website
+  const [isNative, setIsNative] = useState(false);
+  useEffect(() => { setIsNative(isNativeApp()); }, []);
+  const showOnboarding = showOnboardingRaw && isNative;
   const [langOpen, setLangOpen] = useState(false);
 
   // Featured topic: first topic of general-public

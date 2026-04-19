@@ -4,6 +4,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import PostHogProvider from "@/components/PostHogProvider";
 import PushNotificationProvider from "@/components/PushNotificationProvider";
+import DownloadModal from "@/components/DownloadModal";
 
 export const metadata: Metadata = {
   title: "NaijaRights",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>
             <LanguageProvider>
               <PushNotificationProvider />
+              <DownloadModal />
               {children}
             </LanguageProvider>
           </ThemeProvider>
