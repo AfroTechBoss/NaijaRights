@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 const APK_URL =
   "https://github.com/AfroTechBoss/NaijaRights/releases/latest/download/NaijaRights-latest.apk";
 
+const SEEN_KEY = "nr-download-seen";
+
 function isNativeApp() {
   return typeof window !== "undefined" &&
     ((window as any).Capacitor?.isNativePlatform?.() ||
@@ -15,10 +17,19 @@ export default function DownloadModal() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Never show inside the native app
     if (isNativeApp()) return;
+    // Only show if user hasn't seen it before
+    if (localStorage.getItem(SEEN_KEY)) return;
+
     const t = setTimeout(() => setVisible(true), 1200);
     return () => clearTimeout(t);
   }, []);
+
+  function dismiss() {
+    localStorage.setItem(SEEN_KEY, "1");
+    setVisible(false);
+  }
 
   if (!visible) return null;
 
@@ -26,7 +37,7 @@ export default function DownloadModal() {
     <>
       {/* Backdrop */}
       <div
-        onClick={() => setVisible(false)}
+        onClick={dismiss}
         style={{
           position: "fixed", inset: 0, zIndex: 8000,
           background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)",
@@ -52,7 +63,7 @@ export default function DownloadModal() {
 
         {/* Close */}
         <button
-          onClick={() => setVisible(false)}
+          onClick={dismiss}
           aria-label="Close"
           style={{
             position: "absolute", top: 16, right: 16,
@@ -98,13 +109,14 @@ export default function DownloadModal() {
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "13px 16px", borderRadius: 14,
             border: "1px solid var(--line)", background: "var(--bg)",
-            opacity: 0.6, cursor: "not-allowed",
+            opacity: 0.55, cursor: "not-allowed",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M3 20.5v-17c0-.83 1-.83 1.5-.35l14 8.5c.5.3.5 1.1 0 1.4l-14 8.5c-.5.48-1.5.48-1.5-.35Z" fill="#4CAF50"/>
-                <path d="M3 3.5L13.5 12 3 20.5V3.5Z" fill="#81C784"/>
-              </svg>
+              <img
+                src="/google-play-png-logo-3800.png"
+                alt="Google Play"
+                style={{ width: 26, height: 26, objectFit: "contain", flexShrink: 0 }}
+              />
               <div>
                 <div style={{ fontSize: 10, color: "var(--ink-muted)", lineHeight: 1 }}>Coming soon on</div>
                 <div style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", lineHeight: 1.3 }}>Google Play</div>
@@ -122,6 +134,7 @@ export default function DownloadModal() {
           {/* Download APK */}
           <a
             href={APK_URL}
+            onClick={dismiss}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
               padding: "14px 20px", borderRadius: 14, border: "none",
