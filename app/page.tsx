@@ -30,11 +30,6 @@ export default function HomePage() {
       }}>
         {/* Header */}
         <div style={{ padding: "14px 18px 8px", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, background: "var(--bg)", zIndex: 50, borderBottom: "1px solid var(--line)" }}>
-          <div style={{
-            width: 34, height: 34, borderRadius: 17, background: "var(--ink)", color: "var(--bg)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "'Fraunces', Georgia, serif", fontWeight: 600, fontSize: 16, flexShrink: 0,
-          }}>N</div>
           <div style={{ flex: 1, fontFamily: "'Fraunces', Georgia, serif", fontWeight: 500, fontSize: 18, color: "var(--ink)", letterSpacing: -0.3 }}>
             Naija<span style={{ color: "var(--accent)", fontStyle: "italic" }}>Rights</span>
           </div>
