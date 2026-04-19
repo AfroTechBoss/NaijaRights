@@ -1,209 +1,139 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { sections } from "@/content/sections";
-import type { Language } from "@/context/LanguageContext";
-import TopBar from "@/components/TopBar";
 import BottomNav from "@/components/BottomNav";
 import SectionCard from "@/components/SectionCard";
-
-const ALL_LANGUAGES: Language[] = ["en", "pcm", "yo", "ha", "ig"];
-
-// Keyword aliases per section slug — searching these terms surfaces the section
-const SECTION_KEYWORDS: Record<string, string[]> = {
-  "general-public": [
-    "arrest", "bail", "police", "detention", "detained", "rights", "constitution",
-    "search", "officer", "force", "custody", "charge", "court", "warrant",
-    "interrogation", "handcuff", "extort", "bribe",
-  ],
-  "drivers": [
-    "car", "vehicle", "driving", "driver", "frsc", "road", "license", "licence",
-    "checkpoint", "plate", "tyre", "auto", "bike", "motorcycle", "transport",
-    "traffic", "speed", "insurance",
-  ],
-  "traders": [
-    "market", "goods", "nafdac", "consumer", "business", "trade", "shop",
-    "seller", "buy", "product", "price", "fake", "counterfeit", "receipt",
-    "tax", "levy", "taskforce", "task force", "seize", "confiscate",
-  ],
-  "women": [
-    "women", "woman", "girl", "gender", "domestic", "violence", "wife",
-    "female", "vapp", "rape", "sexual", "abuse", "harassment", "assault",
-    "divorce", "custody", "marriage", "trafficking", "naptip",
-  ],
-  "youth": [
-    "youth", "student", "young", "dreadlock", "dreadlocks", "locs", "hair",
-    "fraud", "school", "graduate", "university", "campus", "age", "teen",
-    "teenager", "minor", "social media", "cybercrime",
-  ],
-  "tenants": [
-    "tenant", "rent", "evict", "eviction", "landlord", "house", "apartment",
-    "property", "lease", "accommodation", "notice", "agrement", "agreement",
-    "deposit", "housing", "flat", "room",
-  ],
-};
-
-function sectionMatchesQuery(section: (typeof sections)[number], q: string): boolean {
-  // Check keyword aliases first (fast path)
-  const aliases = SECTION_KEYWORDS[section.slug] ?? [];
-  if (aliases.some((kw) => kw.includes(q) || q.includes(kw))) return true;
-
-  // Search title + description + topic titles + topic summaries across all languages
-  for (const lang of ALL_LANGUAGES) {
-    if (
-      section.title[lang].toLowerCase().includes(q) ||
-      section.description[lang].toLowerCase().includes(q)
-    ) return true;
-
-    for (const topic of section.topics) {
-      if (
-        topic.title[lang].toLowerCase().includes(q) ||
-        topic.summary[lang].toLowerCase().includes(q)
-      ) return true;
-    }
-  }
-  return false;
-}
+import EmergencyFAB from "@/components/EmergencyFAB";
+import LanguageSheet from "@/components/LanguageSheet";
+import Onboarding, { useOnboarding } from "@/components/Onboarding";
 
 export default function HomePage() {
-  const { t, language } = useLanguage();
-  const [query, setQuery] = useState("");
+  const { t, language, greeting } = useLanguage();
+  const { show: showOnboarding, complete: completeOnboarding } = useOnboarding();
+  const [langOpen, setLangOpen] = useState(false);
 
-  const filtered = sections.filter((s) => {
-    if (!query.trim()) return true;
-    return sectionMatchesQuery(s, query.toLowerCase());
-  });
+  // Featured topic: first topic of general-public
+  const featured = sections[0]?.topics[0];
 
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <TopBar showLogo />
+    <>
+      {showOnboarding && <Onboarding onDone={completeOnboarding} />}
 
-      <main className="flex-1 overflow-y-auto" style={{ paddingTop: "64px", paddingBottom: "96px" }}>
-        <div className="max-w-2xl mx-auto px-5 pt-6 space-y-6">
+      <div style={{
+        minHeight: "100dvh", background: "var(--bg)",
+        display: "flex", flexDirection: "column",
+        fontFamily: "'Instrument Sans', system-ui, sans-serif",
+        overflowX: "hidden",
+      }}>
+        {/* Header */}
+        <div style={{ padding: "14px 18px 8px", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, background: "var(--bg)", zIndex: 50, borderBottom: "1px solid var(--line)" }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: 17, background: "var(--ink)", color: "var(--bg)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "'Fraunces', Georgia, serif", fontWeight: 600, fontSize: 16, flexShrink: 0,
+          }}>N</div>
+          <div style={{ flex: 1, fontFamily: "'Fraunces', Georgia, serif", fontWeight: 500, fontSize: 18, color: "var(--ink)", letterSpacing: -0.3 }}>
+            Naija<span style={{ color: "var(--accent)", fontStyle: "italic" }}>Rights</span>
+          </div>
+          {/* Language button */}
+          <button onClick={() => setLangOpen(true)} style={{
+            display: "flex", alignItems: "center", gap: 6, padding: "7px 11px", borderRadius: 18,
+            background: "var(--surface)", border: "1px solid var(--line)", color: "var(--ink)",
+            fontSize: 12, fontWeight: 600, cursor: "pointer",
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg>
+            {language.toUpperCase()}
+          </button>
+        </div>
 
-          {/* Hero card */}
-          <section
-            className="relative overflow-hidden rounded-3xl p-6 shadow-lg"
-            style={{ background: "linear-gradient(135deg, #006e41, #006038)" }}
-          >
-            {/* Decorative blur */}
-            <div
-              className="absolute -right-10 -top-10 w-44 h-44 rounded-full blur-3xl"
-              style={{ background: "rgba(255,255,255,0.1)" }}
-            />
-            <h2
-              className="text-2xl font-extrabold tracking-tight mb-2 leading-tight"
-              style={{ color: "#e7ffeb", fontFamily: "var(--font-manrope)" }}
-            >
-              {t("home.hero.tagline").split("\n").map((line, i, arr) => (
-                <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
-              ))}
-            </h2>
-            <p className="text-sm font-medium mb-5" style={{ color: "rgba(231,255,235,0.85)" }}>
-              {t("home.sections.subtitle")}
-            </p>
-
-            {/* Search bar */}
-            <div className="relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
-                style={{ color: "#006e41" }}
-              />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("home.search.placeholder")}
-                className="w-full h-11 pl-11 pr-4 rounded-xl bg-white text-sm outline-none transition-all"
-                style={{
-                  color: "#143455",
-                  fontFamily: "var(--font-geist-sans)",
-                  boxShadow: query ? "0 0 0 2px #8df8b7" : "none",
-                }}
-              />
+        <main style={{ flex: 1, overflowY: "auto", paddingBottom: 80 }}>
+          {/* Greeting */}
+          <div style={{ padding: "14px 18px 6px" }}>
+            <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 500, letterSpacing: 0.3, textTransform: "uppercase" }}>
+              {greeting}
             </div>
-          </section>
+            <h1 style={{
+              margin: "4px 0 0", fontFamily: "'Fraunces', Georgia, serif", fontWeight: 400, fontSize: 28,
+              lineHeight: 1.1, color: "var(--ink)", letterSpacing: -0.6,
+            }}>
+              {t("hero.a")}{" "}<span style={{ fontStyle: "italic", color: "var(--accent)" }}>{t("hero.b")}</span>
+            </h1>
+          </div>
 
-          {/* Section grid */}
-          <section>
-            <div className="flex justify-between items-end mb-3">
-              <h2
-                className="text-lg font-bold tracking-tight"
-                style={{ color: "#143455", fontFamily: "var(--font-manrope)" }}
-              >
-                {query ? `${t("home.search.results")} "${query}"` : t("home.sections.title")}
-              </h2>
-              {query && (
-                <button
-                  onClick={() => setQuery("")}
-                  className="text-xs font-semibold uppercase tracking-widest"
-                  style={{ color: "#006e41" }}
-                >
-                  {t("home.search.clear")}
-                </button>
-              )}
+          {/* Search bar */}
+          <div style={{ padding: "14px 18px 4px" }}>
+            <Link href="/search" style={{
+              width: "100%", height: 46, borderRadius: 23, border: "1px solid var(--line)",
+              background: "var(--surface)", display: "flex", alignItems: "center", gap: 10,
+              padding: "0 16px", textDecoration: "none", color: "var(--ink-muted)",
+              fontSize: 14, fontWeight: 500,
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>{t("home.search.placeholder")}</span>
+            </Link>
+          </div>
+
+          {/* Featured card */}
+          {featured && (
+            <div style={{ padding: "14px 18px 6px" }}>
+              <Link href={`/general-public/${featured.slug}`} style={{
+                display: "block", textDecoration: "none",
+                background: "var(--ink)", color: "var(--bg)", borderRadius: 20,
+                padding: "18px 18px 16px", position: "relative", overflow: "hidden",
+              }}>
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ fontSize: 10.5, letterSpacing: 1.2, fontWeight: 700, color: "var(--tint)", textTransform: "uppercase" }}>
+                    {t("hero.featured.kicker")}
+                  </div>
+                  <div style={{ marginTop: 6, fontFamily: "'Fraunces', Georgia, serif", fontSize: 22, lineHeight: 1.15, fontWeight: 500, letterSpacing: -0.4 }}>
+                    {t("hero.featured.title")}
+                  </div>
+                  <div style={{ marginTop: 10, fontSize: 12.5, opacity: 0.7 }}>{t("hero.featured.tags")}</div>
+                </div>
+                <div style={{
+                  position: "absolute", right: 16, top: 16, width: 36, height: 36, borderRadius: 18,
+                  background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+              </Link>
             </div>
+          )}
 
-            {filtered.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
-                {filtered.map((section) => (
-                  <SectionCard key={section.slug} section={section} language={language} />
-                ))}
-              </div>
-            ) : (
-              <div
-                className="rounded-2xl p-8 text-center"
-                style={{ background: "#ffffff", border: "0.5px solid rgba(151,180,220,0.2)" }}
-              >
-                <p className="text-sm font-medium" style={{ color: "#456185" }}>
-                  {t("home.search.empty")} &ldquo;{query}&rdquo;
-                </p>
-              </div>
-            )}
-          </section>
+          {/* Sections */}
+          <div style={{ padding: "18px 18px 8px", display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 18, fontWeight: 500, color: "var(--ink)", letterSpacing: -0.2 }}>
+              {t("home.who")}
+            </div>
+            <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{t("home.sections")}</div>
+          </div>
+
+          <div style={{ padding: "4px 18px 0", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {sections.map((section) => (
+              <SectionCard key={section.slug} section={section} language={language} variant="grid" />
+            ))}
+          </div>
 
           {/* Disclaimer */}
-          <section
-            className="rounded-2xl p-5 flex gap-4 items-start"
-            style={{
-              background: "#eff4ff",
-              border: "0.5px solid rgba(151,180,220,0.2)",
-            }}
-          >
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-              style={{ background: "#315cae" }}
-            >
-              <Info className="w-4 h-4 text-white" />
+          <div style={{ margin: "24px 18px 0", padding: 16, borderRadius: 14, background: "var(--surface)", border: "1px solid var(--line)" }}>
+            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 13, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Made for Nigeria.</div>
+            <div style={{ fontSize: 12, color: "var(--ink-soft)", lineHeight: 1.5 }}>
+              All content is drawn from official Nigerian legislation. Free forever. No personal data collected.
             </div>
-            <div>
-              <h4
-                className="font-bold text-sm mb-1 uppercase tracking-tight"
-                style={{ color: "#143455", fontFamily: "var(--font-manrope)" }}
-              >
-                {t("home.disclaimer.title")}
-              </h4>
-              <p className="text-xs leading-relaxed" style={{ color: "#456185" }}>
-                {t("home.disclaimer")}
-              </p>
-              <div className="flex gap-3 mt-2">
-                <a href="https://naijarights.vercel.app/privacy" target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: "#315cae" }}>
-                  Privacy Policy
-                </a>
-                <span className="text-xs" style={{ color: "#a8a29e" }}>·</span>
-                <a href="https://naijarights.vercel.app/sources" target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: "#315cae" }}>
-                  Legal Sources
-                </a>
-              </div>
+            <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+              <Link href="/privacy" style={{ fontSize: 12, color: "var(--accent)", textDecoration: "none" }}>Privacy Policy</Link>
+              <Link href="/sources" style={{ fontSize: 12, color: "var(--accent)", textDecoration: "none" }}>Legal Sources</Link>
             </div>
-          </section>
+          </div>
+        </main>
 
-        </div>
-      </main>
-
-      <BottomNav />
-    </div>
+        <BottomNav />
+        <EmergencyFAB />
+        <LanguageSheet open={langOpen} onClose={() => setLangOpen(false)} />
+      </div>
+    </>
   );
 }

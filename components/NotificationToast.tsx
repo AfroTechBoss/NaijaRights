@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Bell } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface AppNotification {
   title: string;
@@ -15,66 +15,64 @@ interface Props {
 
 export default function NotificationToast({ notification, onDismiss }: Props) {
   const [visible, setVisible] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!notification) { setVisible(false); return; }
     setVisible(true);
-    const t = setTimeout(() => { setVisible(false); setTimeout(onDismiss, 350); }, 6000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => { setVisible(false); setTimeout(onDismiss, 360); }, 6000);
+    return () => clearTimeout(timer);
   }, [notification]);
 
   if (!notification) return null;
 
   return (
-    <div
-      onClick={() => { setVisible(false); setTimeout(onDismiss, 350); }}
-      style={{
-        position: "fixed",
-        top: "72px",
-        left: "12px",
-        right: "12px",
-        zIndex: 9500,
-        background: "#1c1917",
-        borderRadius: "16px",
-        padding: "14px 16px",
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "12px",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
-        cursor: "pointer",
-        transform: visible ? "translateY(0)" : "translateY(-110%)",
-        opacity: visible ? 1 : 0,
-        transition: "transform 0.35s cubic-bezier(0.34,1.2,0.64,1), opacity 0.3s ease",
-        maxWidth: "480px",
-        margin: "0 auto",
-      }}
-    >
-      {/* Icon */}
+    <div style={{
+      position: "fixed", left: 8, right: 8, top: 8, zIndex: 9500,
+      background: "var(--ink)", color: "var(--bg)", borderRadius: 18,
+      padding: "10px 12px", display: "flex", alignItems: "flex-start", gap: 10,
+      transform: visible ? "translateY(0)" : "translateY(-120%)",
+      opacity: visible ? 1 : 0,
+      transition: "transform 360ms cubic-bezier(0.2,0.9,0.2,1), opacity 200ms ease",
+      boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
+      fontFamily: "'Instrument Sans', system-ui, sans-serif",
+      maxWidth: 480, margin: "0 auto",
+    }}>
+      {/* App icon */}
       <div style={{
-        width: "36px", height: "36px", borderRadius: "10px",
-        background: "#006e41", display: "flex", alignItems: "center",
-        justifyContent: "center", flexShrink: 0,
-      }}>
-        <Bell size={16} color="#e7ffeb" />
-      </div>
+        width: 34, height: 34, borderRadius: 9, background: "var(--accent)", flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontFamily: "'Fraunces', Georgia, serif", fontWeight: 600, fontSize: 16,
+        color: "#fff",
+      }}>N</div>
 
       {/* Text */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontWeight: 700, fontSize: "14px", color: "#ffffff", margin: 0, lineHeight: 1.3 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+          <span style={{ fontSize: 11.5, fontWeight: 700 }}>NaijaRights</span>
+          <span style={{ fontSize: 10.5, opacity: 0.6 }}>· now</span>
+        </div>
+        <div style={{ fontSize: 12.5, fontWeight: 600, marginTop: 2, letterSpacing: -0.1 }}>
           {notification.title}
-        </p>
-        <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.72)", margin: "3px 0 0", lineHeight: 1.4 }}>
+        </div>
+        <div style={{ fontSize: 12, opacity: 0.75, marginTop: 1, lineHeight: 1.3 }}>
           {notification.body}
-        </p>
+        </div>
+        <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+          <button onClick={() => { setVisible(false); setTimeout(onDismiss, 360); }} style={{
+            flex: 1, height: 32, borderRadius: 8, border: "none",
+            background: "var(--bg)", color: "var(--ink)",
+            fontSize: 12, fontWeight: 600, cursor: "pointer",
+            fontFamily: "'Instrument Sans', system-ui, sans-serif",
+          }}>{t("notif.read")}</button>
+          <button onClick={() => { setVisible(false); setTimeout(onDismiss, 360); }} style={{
+            flex: 1, height: 32, borderRadius: 8,
+            border: "1px solid rgba(255,255,255,0.3)", background: "transparent",
+            color: "var(--bg)", fontSize: 12, fontWeight: 600, cursor: "pointer",
+            fontFamily: "'Instrument Sans', system-ui, sans-serif", opacity: 0.8,
+          }}>{t("notif.later")}</button>
+        </div>
       </div>
-
-      {/* Dismiss */}
-      <button
-        onClick={(e) => { e.stopPropagation(); setVisible(false); setTimeout(onDismiss, 350); }}
-        style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.5)", padding: 0, flexShrink: 0 }}
-      >
-        <X size={16} />
-      </button>
     </div>
   );
 }

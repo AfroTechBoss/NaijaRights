@@ -1,68 +1,87 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Car, ShoppingBag, Heart, GraduationCap, Home, ArrowRight } from "lucide-react";
 import type { Section } from "@/content/types";
 import type { Language } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 
-const ICONS: Record<string, React.ElementType> = {
-  Shield, Car, ShoppingBag, Heart, GraduationCap, Home,
-};
-
-const CARD_STYLES: Record<string, {
-  iconBg: string; iconColor: string; rotate: string;
-}> = {
-  "general-public": { iconBg: "#8df8b7", iconColor: "#005e37", rotate: "-rotate-6"  },
-  "drivers":        { iconBg: "#d9e2ff", iconColor: "#1f4ea0", rotate: "rotate-3"   },
-  "traders":        { iconBg: "#ffd9d9", iconColor: "#65000b", rotate: "-rotate-3"  },
-  "women":          { iconBg: "#c7aaff", iconColor: "#47009d", rotate: "rotate-6"   },
-  "youth":          { iconBg: "#c7aaff", iconColor: "#47009d", rotate: "rotate-2"   },
-  "tenants":        { iconBg: "#c4dcff", iconColor: "#1f4ea0", rotate: "-rotate-1"  },
+// Section glyph letters
+const GLYPHS: Record<string, string> = {
+  "general-public": "P",
+  "drivers":        "D",
+  "traders":        "T",
+  "women":          "W",
+  "youth":          "Y",
+  "tenants":        "H",
 };
 
 interface Props {
   section: Section;
   language: Language;
+  variant?: "grid" | "list";
 }
 
-export default function SectionCard({ section, language }: Props) {
-  const Icon = ICONS[section.icon] ?? Shield;
-  const style = CARD_STYLES[section.slug] ?? { iconBg: "#8df8b7", iconColor: "#005e37", rotate: "rotate-0" };
+export default function SectionCard({ section, language, variant = "grid" }: Props) {
+  const { t } = useLanguage();
+  const glyph = GLYPHS[section.slug] ?? section.slug[0].toUpperCase();
+  const titleKey = `sec.${section.slug}.title`;
+  const subKey   = `sec.${section.slug}.sub`;
+  const count    = section.topics.length;
+
+  if (variant === "list") {
+    return (
+      <Link href={`/${section.slug}`} style={{
+        display: "flex", alignItems: "center", gap: 14, padding: "14px 14px",
+        border: "1px solid var(--line)", background: "var(--surface)", borderRadius: 16,
+        textDecoration: "none",
+      }}>
+        <Glyph ch={glyph} size={44} />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 16, fontWeight: 500, color: "var(--ink)", letterSpacing: -0.2 }}>
+            {t(titleKey)}
+          </div>
+          <div style={{ fontSize: 12, color: "var(--ink-muted)", marginTop: 1 }}>{t(subKey)}</div>
+        </div>
+        <div style={{ fontSize: 10.5, color: "var(--ink-muted)", fontWeight: 600 }}>{count}</div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </Link>
+    );
+  }
 
   return (
-    <Link
-      href={`/${section.slug}`}
-      className="relative bg-white p-5 rounded-2xl transition-all duration-200 active:scale-95 group cursor-pointer"
-      style={{
-        border: "0.5px solid rgba(151,180,220,0.2)",
-        boxShadow: "0 1px 4px rgba(20,52,85,0.06)",
-      }}
-    >
-      {/* Arrow on hover */}
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <ArrowRight className="w-4 h-4" style={{ color: "#006e41" }} />
+    <Link href={`/${section.slug}`} style={{
+      display: "flex", flexDirection: "column", gap: 10, padding: "14px",
+      border: "1px solid var(--line)", background: "var(--surface)", borderRadius: 18,
+      textDecoration: "none", minHeight: 130, position: "relative", overflow: "hidden",
+    }}>
+      <Glyph ch={glyph} size={36} />
+      <div>
+        <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 16, fontWeight: 500, color: "var(--ink)", letterSpacing: -0.2 }}>
+          {t(titleKey)}
+        </div>
+        <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginTop: 2, lineHeight: 1.3 }}>
+          {t(subKey)}
+        </div>
       </div>
-
-      {/* Rotating icon container */}
-      <div
-        className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 ${style.rotate} group-hover:rotate-0`}
-        style={{ background: style.iconBg }}
-      >
-        <Icon className="w-5 h-5" style={{ color: style.iconColor }} />
+      <div style={{ marginTop: "auto", fontSize: 10.5, fontWeight: 600, color: "var(--accent)", letterSpacing: 0.3 }}>
+        {count} {t("section.topics").toUpperCase()} →
       </div>
-
-      <h3
-        className="font-bold text-base mb-1 leading-tight"
-        style={{ color: "#143455", fontFamily: "var(--font-manrope)" }}
-      >
-        {section.title[language]}
-      </h3>
-      <span
-        className="text-[10px] font-bold uppercase tracking-widest"
-        style={{ color: "#456185", opacity: 0.7 }}
-      >
-        {section.topics.length} Topic{section.topics.length !== 1 ? "s" : ""}
-      </span>
     </Link>
+  );
+}
+
+function Glyph({ ch, size }: { ch: string; size: number }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: size / 2,
+      background: "var(--accent-soft)", color: "var(--accent)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontFamily: "'Fraunces', Georgia, serif", fontWeight: 600, fontSize: size * 0.46,
+      flexShrink: 0,
+    }}>
+      {ch}
+    </div>
   );
 }

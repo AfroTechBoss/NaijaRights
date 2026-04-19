@@ -2,12 +2,13 @@
 
 import { notFound } from "next/navigation";
 import { use } from "react";
-import { Clock } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getSectionBySlug, getTopicBySlug } from "@/content/sections";
-import TopBar from "@/components/TopBar";
+import AppBar from "@/components/AppBar";
 import BottomNav from "@/components/BottomNav";
 import TopicTabs from "@/components/TopicTabs";
+import EmergencyFAB from "@/components/EmergencyFAB";
+import { useSaved } from "@/hooks/useSaved";
 
 export default function TopicPageClient({ params }: { params: Promise<{ section: string; topic: string }> }) {
   const { section: sectionSlug, topic: topicSlug } = use(params);
@@ -17,79 +18,77 @@ export default function TopicPageClient({ params }: { params: Promise<{ section:
   const topic = getTopicBySlug(sectionSlug, topicSlug);
   if (!section || !topic) notFound();
 
+  const { isSaved, toggle } = useSaved();
+  const saved = isSaved(topic.slug);
+
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <TopBar backHref={`/${sectionSlug}`} />
-
-      <main className="flex-1 overflow-y-auto" style={{ paddingTop: "64px", paddingBottom: "96px" }}>
-
-        {/* Topic header */}
-        <div
-          className="px-5 pt-6 pb-6"
-          style={{ borderBottom: "0.5px solid rgba(151,180,220,0.2)" }}
-        >
-          <div className="max-w-2xl mx-auto">
-            <h1
-              className="text-2xl font-extrabold tracking-tight mb-2"
-              style={{ color: "#143455", fontFamily: "var(--font-manrope)" }}
-            >
-              {topic.title[language]}
-            </h1>
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" style={{ color: "#97b4dc" }} />
-              <span className="text-xs" style={{ color: "#97b4dc" }}>
-                {topic.readMinutes} {t("section.readTime")}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabbed content */}
-        <div className="max-w-2xl mx-auto">
-          <TopicTabs
-            topic={topic}
-            language={language}
-            labels={{
-              canDo:        t("topic.canDo"),
-              cannotDo:     t("topic.cannotDo"),
-              whatToDo:     t("topic.whatToDo"),
-              whatNotToDo:  t("topic.whatNotToDo"),
-              laws:         t("topic.laws"),
-              scenario:     t("topic.scenario"),
-              scenarioStep: t("topic.scenarioStep"),
+    <div style={{
+      minHeight: "100dvh", background: "var(--bg)",
+      display: "flex", flexDirection: "column",
+      fontFamily: "'Instrument Sans', system-ui, sans-serif",
+    }}>
+      <AppBar
+        right={
+          <button
+            aria-label={saved ? "Unsave" : "Save"}
+            onClick={() => toggle({
+              sectionSlug,
+              topicSlug: topic.slug,
+              title: topic.title[language],
+              summary: topic.summary[language],
+              savedAt: Date.now(),
+            })}
+            style={{
+              width: 40, height: 40, borderRadius: 20, border: "none",
+              background: "transparent", display: "flex", alignItems: "center",
+              justifyContent: "center", cursor: "pointer",
+              color: saved ? "var(--accent)" : "var(--ink-muted)",
             }}
-          />
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={saved ? "currentColor" : "none"}
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+        }
+      />
 
-          {/* Disclaimer */}
-          <div className="px-5 pb-4">
-            <div
-              className="rounded-2xl p-4 flex gap-3 items-start"
-              style={{ background: "#eff4ff", border: "0.5px solid rgba(151,180,220,0.2)" }}
-            >
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold"
-                style={{ background: "#315cae" }}
-              >
-                i
-              </div>
-              <p className="text-xs leading-relaxed" style={{ color: "#456185" }}>
-                {t("home.disclaimer")}
-              </p>
-              <div className="flex gap-3 mt-2">
-                <a href="https://naijarights.vercel.app/privacy" target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: "#315cae" }}>
-                  Privacy Policy
-                </a>
-                <span className="text-xs" style={{ color: "#a8a29e" }}>·</span>
-                <a href="https://naijarights.vercel.app/sources" target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: "#315cae" }}>
-                  Legal Sources
-                </a>
-              </div>
-            </div>
+      {/* Hero */}
+      <div style={{ padding: "14px 20px 18px", borderBottom: "1px solid var(--line)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+          <div style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: 0.9, textTransform: "uppercase",
+            padding: "3px 8px", borderRadius: 5,
+            background: "var(--accent-soft)", color: "var(--accent)",
+          }}>
+            {t(`sec.${sectionSlug}.title`)}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>
+            {topic.readMinutes} min read
           </div>
         </div>
-      </main>
+        <h1 style={{
+          margin: 0, fontFamily: "'Fraunces', Georgia, serif",
+          fontSize: 28, fontWeight: 500, lineHeight: 1.1,
+          color: "var(--ink)", letterSpacing: -0.6,
+        }}>
+          {topic.title[language]}
+        </h1>
+        <p style={{
+          margin: "10px 0 0", fontSize: 14, lineHeight: 1.5,
+          color: "var(--ink-soft)",
+        }}>
+          {topic.summary[language]}
+        </p>
+      </div>
+
+      {/* Tabbed content — fills remaining height */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", paddingBottom: 72 }}>
+        <TopicTabs topic={topic} />
+      </div>
 
       <BottomNav />
+      <EmergencyFAB />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Legal Sources — NaijaRights",
   description: "Official Nigerian government and legal sources referenced in the NaijaRights app.",
@@ -9,7 +11,7 @@ const SOURCES = [
     items: [
       {
         name: "Constitution of the Federal Republic of Nigeria 1999 (as amended)",
-        publisher: "PLAC — best updated version (includes all alterations up to the 5th Alteration Act 2023)",
+        publisher: "PLAC — includes all alterations up to the 5th Alteration Act 2023",
         url: "https://placng.org/i/wp-content/uploads/2023/05/Constitution-of-the-Federal-Republic-of-Nigeria-2023.pdf",
         altLabel: "Alternative official PDF",
         alt: "https://nigeriarights.gov.ng/files/constitution.pdf",
@@ -62,97 +64,140 @@ const SOURCES = [
   {
     category: "Government Agencies",
     items: [
-      {
-        name: "Federal Road Safety Corps (FRSC)",
-        publisher: "frsc.gov.ng",
-        url: "https://frsc.gov.ng",
-      },
-      {
-        name: "National Agency for Food and Drug Administration and Control (NAFDAC)",
-        publisher: "nafdac.gov.ng",
-        url: "https://www.nafdac.gov.ng",
-      },
-      {
-        name: "National Agency for the Prohibition of Trafficking in Persons (NAPTIP)",
-        publisher: "naptip.gov.ng",
-        url: "https://www.naptip.gov.ng",
-      },
-      {
-        name: "Nigeria Police Force",
-        publisher: "npf.gov.ng",
-        url: "https://www.npf.gov.ng",
-      },
-      {
-        name: "Nigeria Revenue Service (FIRS)",
-        publisher: "nrs.gov.ng",
-        url: "https://www.nrs.gov.ng/",
-      },
-      {
-        name: "Federal Ministry of Justice",
-        publisher: "justice.gov.ng",
-        url: "https://www.justice.gov.ng",
-      },
+      { name: "Federal Road Safety Corps (FRSC)", publisher: "frsc.gov.ng", url: "https://frsc.gov.ng" },
+      { name: "National Agency for Food and Drug Administration and Control (NAFDAC)", publisher: "nafdac.gov.ng", url: "https://www.nafdac.gov.ng" },
+      { name: "National Agency for the Prohibition of Trafficking in Persons (NAPTIP)", publisher: "naptip.gov.ng", url: "https://www.naptip.gov.ng" },
+      { name: "Nigeria Police Force", publisher: "npf.gov.ng", url: "https://www.npf.gov.ng" },
+      { name: "Federal Ministry of Justice", publisher: "justice.gov.ng", url: "https://www.justice.gov.ng" },
     ],
   },
   {
     category: "Legal Databases",
     items: [
-      {
-        name: "Policy and Legal Advocacy Centre (PLAC) — Nigerian legislation repository",
-        publisher: "placng.org",
-        url: "https://placng.org/i/",
-      },
-      {
-        name: "Laws of Nigeria — PLAC consolidated statutes portal",
-        publisher: "lawsofnigeria.placng.org",
-        url: "https://lawsofnigeria.placng.org",
-      },
-      {
-        name: "Nigerian Law Guru — Free Nigerian case law and legislation",
-        publisher: "nigerianlawguru.com",
-        url: "https://nigerianlawguru.com",
-      },
+      { name: "Policy and Legal Advocacy Centre (PLAC)", publisher: "placng.org", url: "https://placng.org/i/" },
+      { name: "Laws of Nigeria — PLAC consolidated statutes portal", publisher: "lawsofnigeria.placng.org", url: "https://lawsofnigeria.placng.org" },
+      { name: "Nigerian Law Guru — Free Nigerian case law and legislation", publisher: "nigerianlawguru.com", url: "https://nigerianlawguru.com" },
     ],
   },
 ];
 
 export default function SourcesPage() {
   return (
-    <main style={{ maxWidth: "720px", margin: "0 auto", padding: "48px 24px 80px", fontFamily: "Georgia, serif", color: "#1a1a1a", lineHeight: 1.8 }}>
-      <h1 style={{ fontSize: "28px", fontWeight: 700, marginBottom: "4px", fontFamily: "system-ui, sans-serif" }}>Legal Sources</h1>
-      <p style={{ fontSize: "14px", color: "#666", marginBottom: "16px" }}>NaijaRights &nbsp;·&nbsp; Official sources referenced in the app</p>
-
-      <div style={{ background: "#fff8e1", border: "1px solid #ffe082", borderRadius: "8px", padding: "16px 20px", marginBottom: "40px", fontSize: "14px" }}>
-        <strong>Disclaimer:</strong> NaijaRights is an independent legal education app. It is <strong>not</strong> affiliated with, endorsed by, or representative of any Nigerian government agency, ministry, or official body. All information is sourced from publicly available official Nigerian legislation and government publications listed below.
+    <div style={{
+      minHeight: "100dvh", background: "var(--bg)",
+      fontFamily: "'Instrument Sans', system-ui, sans-serif",
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: "14px 18px", display: "flex", alignItems: "center", gap: 10,
+        borderBottom: "1px solid var(--line)", background: "var(--bg)",
+        position: "sticky", top: 0, zIndex: 10,
+      }}>
+        <Link href="/" style={{
+          width: 40, height: 40, borderRadius: 20,
+          background: "transparent", display: "flex", alignItems: "center",
+          justifyContent: "center", color: "var(--ink)", textDecoration: "none", flexShrink: 0,
+        }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </Link>
+        <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 18, fontWeight: 500, color: "var(--ink)", letterSpacing: -0.3 }}>
+          Legal Sources
+        </div>
       </div>
 
-      {SOURCES.map((group) => (
-        <section key={group.category} style={{ marginBottom: "40px" }}>
-          <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", fontFamily: "system-ui, sans-serif", borderBottom: "2px solid #006e41", paddingBottom: "6px" }}>
-            {group.category}
-          </h2>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {group.items.map((item) => (
-              <li key={item.url} style={{ marginBottom: "16px", paddingBottom: "16px", borderBottom: "1px solid #f0f0f0" }}>
-                <div style={{ fontWeight: 600, fontSize: "15px", marginBottom: "2px", fontFamily: "system-ui, sans-serif" }}>{item.name}</div>
-                <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>{item.publisher}</div>
-                <a href={item.url} style={{ fontSize: "13px", color: "#006e41", wordBreak: "break-all" }}>{item.url}</a>
-                {item.alt && (
-                  <div style={{ marginTop: "4px" }}>
-                    <span style={{ fontSize: "12px", color: "#999" }}>{item.altLabel ?? "Also at"}: </span>
-                    <a href={item.alt} style={{ fontSize: "12px", color: "#006e41", wordBreak: "break-all" }}>{item.alt}</a>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      <main style={{ maxWidth: 680, margin: "0 auto", padding: "24px 20px 80px" }}>
+        {/* Hero */}
+        <div style={{ marginBottom: 24 }}>
+          <h1 style={{
+            margin: 0, fontFamily: "'Fraunces', Georgia, serif",
+            fontSize: 32, fontWeight: 500, color: "var(--ink)", letterSpacing: -0.7, lineHeight: 1.05,
+          }}>
+            Legal<br /><span style={{ fontStyle: "italic", color: "var(--accent)" }}>Sources</span>
+          </h1>
+          <div style={{ marginTop: 8, fontSize: 13, color: "var(--ink-muted)" }}>
+            Official sources referenced in the NaijaRights app
+          </div>
+        </div>
 
-      <hr style={{ border: "none", borderTop: "1px solid #e0e0e0", margin: "40px 0 24px" }} />
-      <p style={{ fontSize: "13px", color: "#999" }}>
-        NaijaRights provides general legal education only, not legal advice. We are not affiliated with any Nigerian government agency. Laws may change — always consult a qualified Nigerian lawyer for specific legal issues.
-      </p>
-    </main>
+        {/* Disclaimer */}
+        <div style={{
+          padding: "14px 16px", borderRadius: 14, marginBottom: 28,
+          background: "var(--accent-soft)", border: "1px solid var(--accent)",
+          fontSize: 13, color: "var(--ink-soft)", lineHeight: 1.55,
+        }}>
+          <strong style={{ color: "var(--accent)" }}>Independent app:</strong> NaijaRights is not affiliated with, endorsed by, or representative of any Nigerian government agency, ministry, or official body. All content is sourced from publicly available official Nigerian legislation listed below.
+        </div>
+
+        {SOURCES.map((group) => (
+          <div key={group.category} style={{ marginBottom: 32 }}>
+            <div style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase",
+              color: "var(--ink-muted)", marginBottom: 10,
+            }}>
+              {group.category}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {group.items.map((item) => (
+                <div
+                  key={item.url}
+                  style={{
+                    background: "var(--surface)", border: "1px solid var(--line)",
+                    borderRadius: 14, padding: "14px",
+                  }}
+                >
+                  <div style={{
+                    fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, fontWeight: 500,
+                    color: "var(--ink)", lineHeight: 1.25, letterSpacing: -0.1, marginBottom: 4,
+                  }}>
+                    {item.name}
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 6 }}>
+                    {item.publisher}
+                  </div>
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 5,
+                      fontSize: 12, color: "var(--accent)", wordBreak: "break-all", textDecoration: "none",
+                    }}
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    {item.url.replace(/^https?:\/\//, "")}
+                  </a>
+                  {"alt" in item && item.alt && (
+                    <div style={{ marginTop: 6 }}>
+                      <span style={{ fontSize: 11, color: "var(--ink-muted)" }}>{item.altLabel ?? "Also at"}: </span>
+                      <a
+                        href={item.alt}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: 11, color: "var(--accent)", wordBreak: "break-all", textDecoration: "none" }}
+                      >
+                        {item.alt.replace(/^https?:\/\//, "")}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div style={{
+          marginTop: 8, padding: "14px 16px", borderRadius: 14,
+          background: "var(--surface)", border: "1px solid var(--line)",
+          fontSize: 12, color: "var(--ink-muted)", lineHeight: 1.55,
+        }}>
+          NaijaRights provides general legal education only, not legal advice. Laws may change — always consult a qualified Nigerian lawyer for specific legal issues.
+        </div>
+      </main>
+    </div>
   );
 }
