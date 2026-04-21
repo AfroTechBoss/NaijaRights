@@ -10,7 +10,7 @@ firebase.initializeApp({
   projectId:         "naijarights-001",
   storageBucket:     "naijarights-001.firebasestorage.app",
   messagingSenderId: "403289087014",
-  appId:             "",   // add your web appId here from Firebase console
+  appId:             "1:403289087014:web:e290d6537fd74dd7881ae7",
 });
 
 const messaging = firebase.messaging();

@@ -7,7 +7,7 @@ export const firebaseConfig = {
   projectId:         process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID         ?? "naijarights-001",
   storageBucket:     process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET     ?? "naijarights-001.firebasestorage.app",
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "403289087014",
-  appId:             process.env.NEXT_PUBLIC_FIREBASE_APP_ID             ?? "",
+  appId:             process.env.NEXT_PUBLIC_FIREBASE_APP_ID             ?? "1:403289087014:web:e290d6537fd74dd7881ae7",
 };
 
 export const firebaseApp =
